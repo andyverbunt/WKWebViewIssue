@@ -1,0 +1,67 @@
+<html>
+<head>
+    <script type="text/javascript">
+
+        function openSession()
+        {
+            var ip = document.getElementById('ip').value;
+            if (!ip) {
+                alert("no ip address");
+                return;
+            }
+            xmlhttp=new XMLHttpRequest();
+            xmlhttp.withCredentials=true;
+            xmlhttp.open("GET","http://" + ip + ":8090/login",true);
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                        alert(xmlhttp.responseText);
+                    } else {
+                        alert("Error creating session - check your setup. Is the server running?");
+                    }
+                }
+            }
+            xmlhttp.send();
+        }
+
+
+        function retrieveValue()
+        {
+            var ip = document.getElementById('ip').value;
+            if (!ip) {
+                alert("no ip address");
+                return;
+            }
+            xmlhttp = new XMLHttpRequest();
+            xmlhttp.withCredentials = true;
+            xmlhttp.open("GET", "http://" + ip + ":8090/foo",true);
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    var response = xmlhttp.responseText;
+                    if (response != "bar") {
+                        alert("Value in session should be 'bar', but is '" + response + "' because the cookie was not passed on the second request");
+                    } else {
+                        alert("This browser behaves correctly");
+                    }
+                }
+            }
+            xmlhttp.send();
+        }
+    </script>
+</head>
+<body>
+    <center>
+        <h1>XHR+Cookies+WKWebView testcase</h1>
+        <h2>This file should be opened in the browser via file:// protocol</h2>
+        <label for="ip"/>1) Fill in the ip address of the server: </label><input id ="ip" name="ip" type="text" />
+        <br/>
+        <button type="button" onclick="openSession()">2) Click this button to create the session</button>
+        <button type="button" onclick="retrieveValue()">3) Click this button to retrieve a value from the session</button>
+        <br/>
+        <br/>
+        <p>In Safari, the cookies are not correctly sent along with the request, hence step (3) does not work</p>
+        <p>The same behaviour can be observed in a WKWebView component on iOS 9</p>
+        <p>It works correctly in Chrome</p>
+    </center>
+</body>
+</html>
